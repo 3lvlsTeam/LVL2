@@ -70,8 +70,8 @@ def signup():
         session["username"]= request.form["input_username"]
         session["useremail"]= request.form["input_email"]
         session["birthdate"]= datetime.strptime(request.form["input_birthdate"],'%Y-%m-%d')
-        password1= request.form["input_password1"]
-        password2= request.form["input_password2"]
+        session["password"]= request.form["input_password1"]
+        session["password2"]= request.form["input_password2"]
         today=to_integer(date.today())
         birthdate=to_integer(session["birthdate"])
         age=today-birthdate
@@ -95,16 +95,16 @@ def signup():
         if age < 180000:
             flash("to yuong 2 die")
             allgood=False
-        if password1 != password2:
+        if session["password"] != session["password2"]:
             flash("passowrs dont match")
             allgood=False
-        if how_strong.how_strong(password1) < 500:
+        if how_strong.how_strong(session["password"]) < 500:
             flash("passowr are too weak ")
             allgood=False
         if allgood:
-            password=password1.encode("utf-8")
-            session["password"]=bcrypt.hashpw(password,bcrypt.gensalt())
-            newuser=users(session["firstname"],session["lastname"],session["username"],session["useremail"],session["birthdate"],session["password"],datetime.now(),None)
+            session["password"]=session["password"].encode("utf-8")
+            session["password_crybted"]=bcrypt.hashpw(session["password"],bcrypt.gensalt())
+            newuser=users(session["firstname"],session["lastname"],session["username"],session["useremail"],session["birthdate"],session["password_crybted"],datetime.now(),None)
             db.session.add(newuser)
             db.session.commit()
             return redirect(url_for("signupF2"))
@@ -124,11 +124,12 @@ def signupF2():
         session["img_password"]=request.form["img_password"]
         if session['img_password'].count(".")>4:
             session["img_password"]=session["img_password"].encode("utf-8")
-            session["img_password"]=bcrypt.hashpw(session["img_password"],bcrypt.gensalt())
-            usr.img_password = session["img_password"]
+            tmp_img_password=bcrypt.hashpw(session["img_password"],bcrypt.gensalt())
+            usr.img_password = tmp_img_password
+            tmp_img_password=""
             db.session.commit()
             flash('Done!')
-            return redirect(url_for("   "))
+            return redirect(url_for("home"))
         else:flash("click 5 at lest!!")
     directory="static/images/"+str(usr.id)
     if not os.path.exists(directory):
