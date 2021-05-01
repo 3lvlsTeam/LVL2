@@ -37,7 +37,6 @@ class users(db.Model):
     user_password = db.Column(db.String(100),nullable=False)
     img_password = db.Column(db.String(100),nullable=True)
     signup_time = db.Column(db.DateTime)
-    tuple(db.UniqueConstraint('username', 'user_email'))
 
     def __init__(self,first_name,last_name,username,user_email,user_bday,user_password,signup_time,img_password):
         self.first_name=first_name
@@ -60,11 +59,10 @@ def make_tmp_usr():
     except:pass
 def user_is_loged():
     try:
-        usr = users.query.filter_by(username=session["username"]).first()
-        if session["username"]== usr.username :
-            if bcrypt.checkpw(session["password"],usr.user_password):
-                if bcrypt.checkpw(session["img_password"],usr.img_password):
-                    return True
+        make_tmp_usr()
+        if bcrypt.checkpw(session["password"],usr.user_password):
+            if bcrypt.checkpw(session["img_password"],usr.img_password):
+                return True
     except:
             return False
 #-------------------------------------------------------------------------------------------------------------------------------
@@ -131,7 +129,6 @@ def signup():
             newuser=users(session["firstname"],session["lastname"],session["username"],session["useremail"],session["birthdate"],session["password_crybted"],datetime.now(),None)
             db.session.add(newuser)
             db.session.commit()
-            make_tmp_usr()
             return redirect(url_for("signupF2"))
 
     return render_template("signup.html")
@@ -144,6 +141,7 @@ def signup():
 @app.route("/signupF2",methods=["POST","GET"])
 def signupF2():   
     if request.method == "POST":
+        make_tmp_usr()
         session["img_password"]=request.form["img_password"]
         if session['img_password'].count(".")>4:
             session["img_password"]=session["img_password"].encode("utf-8")
@@ -220,7 +218,7 @@ def loginF2():
             return redirect(url_for("home") )
     except:
         pass
-    if not usr.img_password:
+    if usr.img_password == None:
         flash("Pleas Fnish Signing Up First!")
         return redirect(url_for("signupF2"))
    
