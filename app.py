@@ -152,7 +152,7 @@ def signupF2():
         else:flash("Choose 5 images at lest!!")
     directory=functions.directory.directory_maker(usr.id)
     img_list= functions.directory.directory_scaner(directory)
-    return render_template("signupF2.html", imgs_list =img_list,directory=directory , username=usr.username)
+    return render_template("signupF2.html", imgs_list =img_list,directory=directory ,usr=usr)
 #------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -231,7 +231,7 @@ def loginF2():
     
     directory=functions.directory.directory_maker(usr.id)
     img_list= functions.directory.directory_scaner(directory)
-    return render_template("loginF2.html", imgs_list =img_list, directory=directory ,username=usr.username )
+    return render_template("loginF2.html", imgs_list =img_list, directory=directory ,usr=usr)
 #-------------------------------------------------------------------------------------------------------------------------------
   
 
@@ -241,7 +241,7 @@ def loginF2():
 @app.route("/home")
 def home():
     if user_is_loged():
-        return render_template("home.html", username=usr.username)
+        return render_template("home.html", usr=usr)
     else:
         flash("You r not loged in!")
         return redirect(url_for("login"))

@@ -42,15 +42,15 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              {%if username:%}
+              {%if usr:%}
               <li class="nav-item">
-                <a class="nav-link username_nav_a" href="profile">{{username}}</a>
+                <a class="nav-link username_nav_a" href="profile">{{usr.username}}</a>
               </li>
               <li class="nav-item  ">
                 <a class="nav-link" href="logout"> Log out </a>
               </li>
               {%endif%}
-              {%if not username:%}
+              {%if not usr:%}
               <li class="nav-item">
                 <a class="nav-link login_nav_a" href="login">Log in</a>
               </li>
