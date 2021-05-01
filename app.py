@@ -140,8 +140,8 @@ def signup():
 #---- signup 2 function ----------------------------------------------------------------------------------------------------------
 @app.route("/signupF2",methods=["POST","GET"])
 def signupF2():   
+    make_tmp_usr()
     if request.method == "POST":
-        make_tmp_usr()
         session["img_password"]=request.form["img_password"]
         if session['img_password'].count(".")>4:
             session["img_password"]=session["img_password"].encode("utf-8")
