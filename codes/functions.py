@@ -74,7 +74,7 @@ class directory():
             os.makedirs(directory)
         img_list =  os.listdir(directory)
         if len(img_list) <5:
-            flash("you need 2 have at lest 5 photos for the key, will use defalt photos 4 now.")
+            flash("Using defalt random photos !!")
             directory="static/images/defalt"
         return directory
     def directory_scaner(directory):

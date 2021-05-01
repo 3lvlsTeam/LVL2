@@ -1,12 +1,12 @@
 #-- import section ----------------------------------------------------------------------------------------------------------
 from functools import reduce
 import re , bcrypt,os
-from random import shuffle
 from flask import Flask , redirect, url_for, render_template,request,flash
 from flask.globals import session
 from datetime import datetime, timedelta , date
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+import urllib.request
 from codes import functions
 #------------------------------------------------------------------------------------------------------------------------------
 
@@ -18,6 +18,7 @@ app.secret_key="3Eg!hS_24vwvEWF34@!r"
 app.config['SQLALCHEMY_DATABASE_URI']= 'sqlite:///database/users.sqlite3'
 app.config['SQLALCHEMY_TRAC_MODIFICATIONS']=False
 app.permanent_session_lifetime = timedelta(days=1)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 #-------------------------------------------------------------------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ def make_tmp_usr():
         global usr
         usr = users.query.filter_by(username=session["username"]).first()
     except:pass
+
 def user_is_loged():
     try:
         make_tmp_usr()
@@ -65,6 +67,11 @@ def user_is_loged():
                 return True
     except:
             return False
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+     
 #-------------------------------------------------------------------------------------------------------------------------------
 
        
@@ -123,6 +130,8 @@ def signup():
         if functions.how_strong.how_strong(session["password"]) < 500:
             flash("passowr are too weak ")
             allgood=False
+        if not allgood:
+            return redirect(url_for("signup"))
         if allgood:
             session["password"]=session["password"].encode("utf-8")
             session["password_crybted"]=bcrypt.hashpw(session["password"],bcrypt.gensalt())
@@ -130,11 +139,31 @@ def signup():
             db.session.add(newuser)
             db.session.commit()
             return redirect(url_for("signupF2"))
+        
 
     return render_template("signup.html")
 
 
 #--------------------------------------------------------------------------------------------------------------------------------
+
+
+
+#--- pwget function ------------------------------------------------------------------------------------------------------------
+@app.route("/pwgen",methods=["POST","GET"] )
+def pwgen():
+    
+    if request.method == "POST":
+        input_gen_numbers = request.form["input_gen_numbers"]
+        input_gen_text = request.form["input_gen_text"]
+        if functions.pw_maker.conventer_to_list(input_gen_text) < 8:
+            flash("enter al lest 8 words")
+            return redirect(url_for('pwgen'))
+        elif functions.pw_maker.conventer_to_list(input_gen_text) > 7:
+            gen_password = functions.pw_maker.password_maker(input_gen_numbers,input_gen_text)
+            return render_template("pwgen.html",gen_password=gen_password) 
+
+    return render_template("pwgen.html")
+#-------------------------------------------------------------------------------------------------------------------------------
 
 
 #---- signup 2 function ----------------------------------------------------------------------------------------------------------
@@ -157,30 +186,26 @@ def signupF2():
 
 
 #---- uploader function --------------------------------------------------------------------------------------------------------
-
+@app.route('/uploader', methods=["POST","GET"])
+def uploader():
+    make_tmp_usr()
+    if not bcrypt.checkpw(session["password"],usr.user_password):
+        return redirect(url_for("login"))
+    directory="static/images/"+str(usr.id)
+    img_list=os.listdir(directory)
+    if len(img_list)<5:
+        flash("must be at lest 5 photos ")
+    if request.method=="POST":
+        file = request.files["file"]
+        if allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(directory, filename))
+            flash('Image was successfully uploaded')
+            return redirect(url_for('uploader'))
+        else:
+            flash('Allowed image types are - png, jpg, jpeg, gif')
+    return render_template("uploader.html",usr=usr,imgs_list=img_list,directory=directory)   
 #-------------------------------------------------------------------------------------------------------------------------------
-
-
-
-#--- pwget function ------------------------------------------------------------------------------------------------------------
-@app.route("/pwgen",methods=["POST","GET"] )
-def pwgen():
-    
-    if request.method == "POST":
-        input_gen_numbers = request.form["input_gen_numbers"]
-        input_gen_text = request.form["input_gen_text"]
-        if functions.pw_maker.conventer_to_list(input_gen_text) < 8:
-            flash("enter al lest 8 words")
-            return redirect(url_for('pwgen'))
-        elif functions.pw_maker.conventer_to_list(input_gen_text) > 7:
-            gen_password = functions.pw_maker.password_maker(input_gen_numbers,input_gen_text)
-            return render_template("pwgen.html",gen_password=gen_password) 
-
-    return render_template("pwgen.html")
-#-------------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 
 #--- login function -----------------------------------------------------------------------------------------------------------
