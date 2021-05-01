@@ -62,11 +62,11 @@ def user_is_loged():
     try:
         usr = users.query.filter_by(username=session["username"]).first()
         if session["username"]== usr.username :
-                if bcrypt.checkpw(session["password"],usr.user_password):
-                    if bcrypt.checkpw(session["img_password"],usr.img_password):
-                        return True
-    except:pass
-    return False
+            if bcrypt.checkpw(session["password"],usr.user_password):
+                if bcrypt.checkpw(session["img_password"],usr.img_password):
+                    return True
+    except:
+            return False
 #-------------------------------------------------------------------------------------------------------------------------------
 
        
@@ -216,7 +216,7 @@ def login():
 @app.route('/loginF2', methods=['GET', 'POST'])
 def loginF2():
     try:
-        if session["img_password"]== usr.img_password:
+        if bcrypt.checkpw(session["img_password"],usr.img_password):
             return redirect(url_for("home") )
     except:
         pass
