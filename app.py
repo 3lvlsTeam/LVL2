@@ -242,7 +242,9 @@ def loginF2():
         if bcrypt.checkpw(session["img_password"],usr.img_password):
             return redirect(url_for("home") )
     except:
-        pass
+        if not bcrypt.checkpw(session["password"],usr.user_password):
+            flash("ur not loged in yet!")
+            return redirect(url_for("login") )
     if usr.img_password == None:
         flash("Pleas Fnish Signing Up First!")
         return redirect(url_for("signupF2"))
