@@ -214,11 +214,9 @@ def uploader():
 #--- login function -----------------------------------------------------------------------------------------------------------
 @app.route("/login",methods=["POST","GET"])
 def login():
-    try:
-        if bcrypt.checkpw(session["password"],usr.user_password):
-            return redirect(url_for("loginF2") )
-    except:
-        pass
+    if user_is_loged():
+        return redirect(url_for("home") )
+    
     if request.method=="POST":
         session.clear()
         session["username"]=request.form["username"]
@@ -243,10 +241,9 @@ def login():
 def loginF2():
     if user_is_loged():
             return redirect(url_for("home") )
-    except:
-        if not bcrypt.checkpw(session["password"],usr.user_password):
-            flash("ur not loged in yet!")
-            return redirect(url_for("login") )
+    if not bcrypt.checkpw(session["password"],usr.user_password):
+        flash("ur not loged in yet!")
+        return redirect(url_for("login") )
     if usr.img_password == None:
         flash("Pleas Fnish Signing Up First!")
         return redirect(url_for("signupF2"))
