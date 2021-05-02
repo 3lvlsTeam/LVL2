@@ -58,12 +58,15 @@ def make_tmp_usr():
         global usr
         usr = users.query.filter_by(username=session["username"]).first()
     except:pass
-
+user_is_logedin=False
 def user_is_loged():
+    if user_is_logedin:
+        return True
     try:
         make_tmp_usr()
         if bcrypt.checkpw(session["password"],usr.user_password):
             if bcrypt.checkpw(session["img_password"],usr.img_password):
+                user_is_logedin=True
                 return True
     except:
             return False
@@ -238,8 +241,7 @@ def login():
 #--- loginF2 function ----------------------------------------------------------------------------------------------------------
 @app.route('/loginF2', methods=['GET', 'POST'])
 def loginF2():
-    try:
-        if bcrypt.checkpw(session["img_password"],usr.img_password):
+    if user_is_loged():
             return redirect(url_for("home") )
     except:
         if not bcrypt.checkpw(session["password"],usr.user_password):
