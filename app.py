@@ -53,21 +53,18 @@ class users(db.Model):
 
 
 #------  some functions  -------------------------------------------------------------------------------------------------------
-global user_is_logedin
-user_is_logedin=False
+
 def make_tmp_usr():
     try:
         global usr
         usr = users.query.filter_by(username=session["username"]).first()
     except:pass
 def user_is_loged():
-    if user_is_logedin:
-        return True
+
     try:
         make_tmp_usr()
         if bcrypt.checkpw(session["password"],usr.user_password):
             if bcrypt.checkpw(session["img_password"],usr.img_password):
-                user_is_logedin=True
                 return True
     except:
             return False
@@ -220,7 +217,6 @@ def login():
     
     if request.method=="POST":
         session.clear()
-        user_is_logedin=False
         session["username"]=request.form["username"]
         session["password"]=request.form["password"].encode("utf-8")
         make_tmp_usr()
@@ -292,7 +288,6 @@ def profile():
 @app.route("/logout")
 def logout():
     session.clear()
-    user_is_logedin=False
     flash("you just loged out")
     return redirect(url_for("main"))
 #------------------------------------------------------------------------------------------------------------------------------
