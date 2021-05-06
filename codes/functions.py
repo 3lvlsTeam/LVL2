@@ -6,6 +6,8 @@ from flask import flash
 special_words = ['!', '@', '#', '$', '%', '^', '&','*', ':', '"', '?', '/', '(', ')', '+', '_']
 #---------------------------------------------------------------------------------------------------------------------------------------------------        
 
+def sanvdjsv():
+    pass
 class pw_maker():
         
     def password_maker(favourite_number,some_words):
@@ -74,8 +76,7 @@ class directory():
             os.makedirs(directory)
         img_list =  os.listdir(directory)
         if len(img_list) <5:
-            flash("Using defalt random photos !!")
-            directory="static/images/defalt"
+            flash(" u need 2 upload 5 photos at lest !!")
         return directory
     def directory_scaner(directory):
         img_list =  os.listdir(directory)
