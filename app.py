@@ -197,10 +197,14 @@ def uploader():
     if len(img_list)<5:
         flash("must be at lest 5 photos ")
     if request.method=="POST":
-        file = request.files["file"]
-        if allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(directory, filename))
+        if 'files[]' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        files = request.files.getlist('files[]')
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(directory, filename))
             flash('Image was successfully uploaded')
             return redirect(url_for('uploader'))
         else:
