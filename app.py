@@ -201,14 +201,15 @@ def uploader():
             flash('No file part')
             return redirect(request.url)
         files = request.files.getlist('files[]')
+        print(files)
         for file in files:
             if file and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(directory, filename))
-            flash('Image was successfully uploaded')
-            return redirect(url_for('uploader'))
-        else:
-            flash('Allowed image types are - png, jpg, jpeg, gif')
+            else:
+                flash('Allowed image types are - png, jpg, jpeg, gif')      
+        return redirect(url_for('uploader'))
+        
     return render_template("uploader.html",usr=usr,imgs_list=img_list,directory=directory)   
 #-------------------------------------------------------------------------------------------------------------------------------
 
