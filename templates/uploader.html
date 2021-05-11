@@ -28,32 +28,15 @@
         </div> {%endfor%}
     </div>
     <h4>Select an image to upload</h4>
-    <input multiple type="file" name="file" class="form-control" autocomplete="off" required>
-    <br><input type="submit" value="Upload" class="btn btn-lg btn-secondary">
-    <a class="btn btn-lg btn-primary" href="signupF2"> Done </a>
+    <input multiple type="file" name="files[]" class="form-control" autocomplete="off" required>
+    <br><input type="submit" value="Upload" class="btn btn-lg btn-primary">
+    <a class="btn btn-lg btn-secondary" href="signupF2"> Done </a>
 
 </form>
 {% endblock %}
 
 <!--scripts block ------------------------------------------------------------>
 
-<<<<<<< HEAD
-{% block script %}
-    <script>
-        function runPyScript(dir,id){
-            var jqXHR = $.ajax({
-                type: "POST",
-                url: "/codes/remover.py",
-                async: false,
-                data: { id: id,
-                        dir: dir }
-            })}
-
-    </script>
-
-{% endblock%}
-=======
-<<<<<<< HEAD
 {% block script %}
 <script>
     function remove(id) {
@@ -63,7 +46,3 @@
     }
 </script>
 {% endblock %}
-=======
-{% block script %} {% endblock%}
->>>>>>> 39bb801a9a422e588079d0f211792becb36fb363
->>>>>>> f7b0f3ad29b51d9d63e23ff4cd6e7f01683de319
