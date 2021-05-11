@@ -197,14 +197,19 @@ def uploader():
     if len(img_list)<5:
         flash("must be at least 5 photos ")
     if request.method=="POST":
-        file = request.files["file"]
-        if allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(directory, filename))
-            flash('Image was successfully uploaded')
-            return redirect(url_for('uploader'))
-        else:
-            flash('Allowed image types are - png, jpg, jpeg, gif')
+        if 'files[]' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        files = request.files.getlist('files[]')
+        print(files)
+        for file in files:
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(directory, filename))
+            else:
+                flash('Allowed image types are - png, jpg, jpeg, gif')      
+        return redirect(url_for('uploader'))
+        
     return render_template("uploader.html",usr=usr,imgs_list=img_list,directory=directory)   
 #-------------------------------------------------------------------------------------------------------------------------------
 
@@ -239,9 +244,14 @@ def login():
 def loginF2():
     if user_is_loged():
             return redirect(url_for("home") )
-    if not bcrypt.checkpw(session["password"],usr.user_password):
+    try:        
+        if not bcrypt.checkpw(session["password"],usr.user_password):
+            flash("ur not loged in yet!")
+            return redirect(url_for("login") )
+    except:
         flash("ur not loged in yet!")
         return redirect(url_for("login") )
+
     if usr.img_password == None:
         flash("Pleas Fnish Signing Up First!")
         return redirect(url_for("signupF2"))
