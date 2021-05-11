@@ -22,7 +22,7 @@
     <h5>ur images :</h5>
     <div class="imgs_div">
         {%for i in imgs_list:%}
-        <input style="background-image: url({{directory}}/{{i}});" class="img_button" value=" " type="button"> {%endfor%}
+        <input style="background-image: url({{directory}}/{{i}});" class="img_button" value=" " type="button" onclick="runPyScript('{{directory}}','{{i}}')"> {%endfor%}
     </div>
     <h4>Select an image to upload</h4>
     <input multiple type="file" name="files[]" class="form-control" autocomplete="off" required>
@@ -34,4 +34,17 @@
 
 <!--scripts block ------------------------------------------------------------>
 
-{% block script %} {% endblock%}
+{% block script %}
+    <script>
+        function runPyScript(dir,id){
+            var jqXHR = $.ajax({
+                type: "POST",
+                url: "/codes/remover.py",
+                async: false,
+                data: { id: id,
+                        dir: dir }
+            })}
+
+    </script>
+
+{% endblock%}
