@@ -111,7 +111,7 @@ def signup():
             flash("This Email is alrady used, try another one.")
             allgood= False
         if re.search(r'\d', session["firstname"]):
-            flash(" fits name must be letters only")
+            flash(" first name must be letters only")
             allgood=False
         if re.search(r'\d', session["lastname"]):
             flash(" last name must be letters only")
@@ -123,13 +123,13 @@ def signup():
             flash("email is not valid")
             allgood=False
         if age < 180000:
-            flash("to yuong 2 die")
+            flash("must be above 18")
             allgood=False
         if session["password"] != session["password2"]:
-            flash("passowrs dont match")
+            flash("password doesn't match")
             allgood=False
         if functions.how_strong.how_strong(session["password"]) < 500:
-            flash("passowr are too weak ")
+            flash("password are too weak ")
             allgood=False
         if not allgood:
             return redirect(url_for("signup"))
@@ -179,7 +179,7 @@ def signupF2():
             db.session.commit()
             flash('Done!')
             return redirect(url_for("home"))
-        else:flash("Choose 5 images at lest!!")
+        else:flash("Choose 5 images at least!!")
     directory=functions.directory.directory_maker(usr.id)
     img_list= functions.directory.directory_scaner(directory)
     return render_template("signupF2.html", imgs_list =img_list,directory=directory ,usr=usr)
@@ -195,7 +195,7 @@ def uploader():
     directory="static/images/"+str(usr.id)
     img_list=os.listdir(directory)
     if len(img_list)<5:
-        flash("must be at lest 5 photos ")
+        flash("must be at least 5 photos ")
     if request.method=="POST":
         if 'files[]' not in request.files:
             flash('No file part')
@@ -244,9 +244,14 @@ def login():
 def loginF2():
     if user_is_loged():
             return redirect(url_for("home") )
-    if not bcrypt.checkpw(session["password"],usr.user_password):
+    try:        
+        if not bcrypt.checkpw(session["password"],usr.user_password):
+            flash("ur not loged in yet!")
+            return redirect(url_for("login") )
+    except:
         flash("ur not loged in yet!")
         return redirect(url_for("login") )
+
     if usr.img_password == None:
         flash("Pleas Fnish Signing Up First!")
         return redirect(url_for("signupF2"))
