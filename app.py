@@ -178,7 +178,7 @@ def signupF2():
             usr.img_password=bcrypt.hashpw(session["img_password"],bcrypt.gensalt())
             db.session.commit()
             flash('Done!')
-            return redirect(url_for("home"))
+            return redirect(url_for("signupF3"))
         else:flash("Choose 5 images at least!!")
     directory=functions.directory.directory_maker(usr.id)
     img_list= functions.directory.directory_scaner(directory)
@@ -213,6 +213,10 @@ def uploader():
     return render_template("uploader.html",usr=usr,imgs_list=img_list,directory=directory)   
 #-------------------------------------------------------------------------------------------------------------------------------
 
+@app.route('/signupF3')
+def signupF3():
+
+    return  render_template("signupF3.html")
 
 #--- login function -----------------------------------------------------------------------------------------------------------
 @app.route("/login",methods=["POST","GET"])
